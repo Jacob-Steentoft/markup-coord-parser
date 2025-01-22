@@ -1,0 +1,10 @@
+[package]
+name = "slicer-toolbox-gui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+iced = "0.13.1"
+iced_table = "0.13.0"
+rfd = { version = "0.15.1" }
+slicer-toolbox-core = {path = "../slicer-toolbox-core"}

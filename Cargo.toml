@@ -1,0 +1,7 @@
+[workspace]
+resolver = "2"
+members = [
+    "slicer-toolbox-core",
+    "slicer-toolbox-cmd",
+    "slicer-toolbox-gui"
+]
