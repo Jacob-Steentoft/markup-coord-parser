@@ -1,0 +1,23 @@
+name: Rust_Deploy
+
+on: 
+  push:
+    tags:
+    - '*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: cargo build /slicer-toolbox-cmd --release --target-dir /output
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "/output/*"
