@@ -18,9 +18,9 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Version
-      run: | 
-        VERSION=$(grep -oP 'version\s*=\s*"\K[^\"]+' ${{ github.workspace }}/slicer-toolbox-cmd/Cargo.toml | tr -d '\n')
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
+      run: |
+        $version = Select-String -Path "C:\path\to\your\Cargo.toml" -Pattern 'version\s*=\s*"\K[^\"]+' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $_.Value }
+        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8
 
     - name: Build
       run: cargo build -p slicer-toolbox-cmd --release --target-dir ${{ github.workspace }}/output/
