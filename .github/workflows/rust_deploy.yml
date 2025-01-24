@@ -2,8 +2,8 @@ name: Rust_Deploy
 
 on: 
   push:
-    tags:
-    - '*'
+    branches:
+      - master
 
 env:
   CARGO_TERM_COLOR: always
@@ -17,12 +17,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Version
+      run: | 
+        VERSION=$(grep -oP 'version\s*=\s*"\K[^\"]+' /slicer-toolbox-cmd/Cargo.toml)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
     - name: Build
       run: cargo build -p slicer-toolbox-cmd --release --target-dir /output
 
     - uses: ncipollo/release-action@v1
       with:
+        tag: "${{ env.VERSION }}"
         artifacts: "/output/*"
-        allowUpdates: 'true'
+        allowUpdates: 'false'
         generateReleaseNotes: 'true'
-        updateOnlyUnreleased: 'true'
