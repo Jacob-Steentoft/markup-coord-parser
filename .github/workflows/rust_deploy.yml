@@ -23,11 +23,11 @@ jobs:
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Build
-      run: cargo build -p slicer-toolbox-cmd --release --target-dir /output
+      run: cargo build -p slicer-toolbox-cmd --release --target-dir ${{ github.workspace }}/output/
 
     - uses: ncipollo/release-action@v1
       with:
-        tag: "${{ env.VERSION }}"
-        artifacts: "/output/*"
+        tag: "${{ env.VERSION }}.${{ github.run_number }}"
+        artifacts: "${{ github.workspace }}/output/*"
         allowUpdates: 'false'
         generateReleaseNotes: 'true'
