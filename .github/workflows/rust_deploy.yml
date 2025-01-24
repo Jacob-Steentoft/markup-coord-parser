@@ -19,7 +19,7 @@ jobs:
 
     - name: Version
       run: | 
-        VERSION=$(grep -oP 'version\s*=\s*"\K[^\"]+' ${{ github.workspace }}/slicer-toolbox-cmd/Cargo.toml)
+        VERSION=$(grep -oP 'version\s*=\s*"\K[^\"]+' ${{ github.workspace }}/slicer-toolbox-cmd/Cargo.toml | tr -d '\n')
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Build
