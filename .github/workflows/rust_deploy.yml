@@ -16,8 +16,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Build
-      run: cargo build /slicer-toolbox-cmd --release --target-dir /output
+      run: cargo build -p slicer-toolbox-cmd --release --target-dir /output
+
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "/output/*"
+        allowUpdates: 'true'
+        generateReleaseNotes: 'true'
+        updateOnlyUnreleased: 'true'

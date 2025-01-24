@@ -3296,7 +3296,7 @@ dependencies = [
 
 [[package]]
 name = "slicer-toolbox-cmd"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "compress-tools",
@@ -3312,7 +3312,7 @@ dependencies = [
 
 [[package]]
 name = "slicer-toolbox-core"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "serde",
