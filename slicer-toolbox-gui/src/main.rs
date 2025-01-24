@@ -1,4 +1,4 @@
-use iced::widget::{button, column, container, row, scrollable, text, Column, Container};
+use iced::widget::{button, container, row, scrollable, text, Column};
 use iced::{Alignment, Element, Length};
 use rfd::FileDialog;
 use slicer_toolbox_core::{parse_slicer_markups, Coordinate, Coordinates};
