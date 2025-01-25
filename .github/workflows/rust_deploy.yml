@@ -28,6 +28,7 @@ jobs:
           runVcpkgInstall: 'true'
           doNotCache: 'false'
           vcpkgJsonGlob: '**/.deps/vcpkg.json'
+          vcpkgGitCommitId: 'a42af01b72c28a8e1d7b48107b33e4f286a55ef6'
 
       - name: Build
         run: cargo build -p slicer-toolbox-cmd --release --target-dir ${{ github.workspace }}/output/
