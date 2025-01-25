@@ -7,6 +7,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  VCPKG_DEFAULT_TRIPLET: 'x64-windows'
+  VCPKG_ROOT: '${{ github.workspace }}/vcpkg'
 
 jobs:
   build:
@@ -33,6 +35,9 @@ jobs:
           doNotCache: 'false'
           vcpkgJsonGlob: '**/.deps/vcpkg.json'
           vcpkgGitCommitId: '57c08a3223a1ec03c3a31986ee38d32e90b6039c'
+
+      - name: Integrate
+        run: vcpkg integrate install
 
       - name: Build
         run: cargo build -p slicer-toolbox-cmd --release --target-dir ${{ github.workspace }}/output/
