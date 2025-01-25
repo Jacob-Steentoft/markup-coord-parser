@@ -23,12 +23,16 @@ jobs:
           $null = $content -match 'version\s*=\s"(.*)"' 
           echo "VERSION=$($Matches.1)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
+      - uses: lukka/get-cmake@latest
+        with:
+          useCloudCache: 'true'
+
       - uses: lukka/run-vcpkg@v11
         with:
           runVcpkgInstall: 'true'
           doNotCache: 'false'
           vcpkgJsonGlob: '**/.deps/vcpkg.json'
-          vcpkgGitCommitId: 'a42af01b72c28a8e1d7b48107b33e4f286a55ef6'
+          vcpkgGitCommitId: '57c08a3223a1ec03c3a31986ee38d32e90b6039c'
 
       - name: Build
         run: cargo build -p slicer-toolbox-cmd --release --target-dir ${{ github.workspace }}/output/
