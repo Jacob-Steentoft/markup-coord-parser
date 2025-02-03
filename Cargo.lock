@@ -2064,6 +2064,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "itertools"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
+dependencies = [
+ "either",
+]
+
+[[package]]
 name = "itoa"
 version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3216,9 +3225,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.137"
+version = "1.0.138"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "930cfb6e6abf99298aaad7d29abbef7a9999a9a8806a40088f55f0dcec03146b"
+checksum = "d434192e7da787e94a6ea7e9670b26a036d0ca41e0b7efb2676dd32bae872949"
 dependencies = [
  "itoa",
  "memchr",
@@ -3296,13 +3305,14 @@ dependencies = [
 
 [[package]]
 name = "slicer-toolbox-cmd"
-version = "1.0.1"
+version = "1.0.2"
 dependencies = [
  "anyhow",
  "compress-tools",
  "csv",
  "dont_disappear",
  "icu_collator",
+ "itertools",
  "merge-whitespace-utils",
  "rfd",
  "serde_json",
