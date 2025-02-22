@@ -7,7 +7,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  VCPKG_DEFAULT_TRIPLET: 'x64-windows'
+  VCPKG_DEFAULT_TRIPLET: 'x64-windows-static-md'
 
 jobs:
   build:
@@ -17,6 +17,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: "Set environmental variables"
+        shell: bash
+        run: |
+          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
 
       - name: Version
         run: |
@@ -38,17 +43,7 @@ jobs:
       - name: Integrate
         run: vcpkg integrate install
 
-      - uses: lukka/run-vcpkg@v11
-        id: 'runvcpkg'
-        with:
-          runVcpkgInstall: 'true'
-          doNotCache: 'false'
-          vcpkgJsonGlob: '**/.deps/vcpkg.json'
-          vcpkgGitCommitId: '57c08a3223a1ec03c3a31986ee38d32e90b6039c'
-
       - name: Build
-        env:
-          VCPKG_ROOT: '${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}'
         run: cargo build -p slicer-toolbox-cmd --release --target-dir ${{ github.workspace }}/output/
 
       - uses: ncipollo/release-action@v1
