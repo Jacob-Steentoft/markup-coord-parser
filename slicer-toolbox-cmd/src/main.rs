@@ -1,11 +1,10 @@
 use anyhow::{anyhow, Context, Result};
-use compress_tools::ArchiveContents;
 use csv::Writer;
 use icu_collator::{AlternateHandling, Collator, CollatorOptions, Numeric};
 use itertools::Itertools;
 use merge_whitespace_utils::merge_whitespace;
 use rfd::FileDialog;
-use slicer_toolbox_core::SlicerMarkup;
+use slicer_toolbox_core::{ArchiveCollector, SlicerMarkup};
 use std::collections::HashMap;
 use std::fs::File;
 use std::ops::Neg;
@@ -42,30 +41,12 @@ fn main() -> Result<()> {
 			File::open(entry.path()).context(format!("Could not open file: {}", file_name))?;
 
 		let mut all_coords = HashMap::new();
-		let mut buffer = Vec::new();
-		for context in compress_tools::ArchiveIteratorBuilder::new(&file)
+		for markup_content in compress_tools::ArchiveIteratorBuilder::new(&file)
 			.filter(|name, _| name.ends_with(".mrk.json"))
 			.build()?
+			.into_de_iter::<SlicerMarkup>()
 		{
-			match context {
-				ArchiveContents::StartOfEntry(_, _) => {
-					buffer.clear();
-					continue;
-				}
-				ArchiveContents::DataChunk(buf) => {
-					buffer.extend(&buf);
-					continue;
-				}
-				ArchiveContents::EndOfEntry => {}
-				ArchiveContents::Err(err) => {
-					return Err(anyhow!("Failed to parse archive data with err: {0}", err))
-				}
-			}
-
-			let markup_content: SlicerMarkup =
-				serde_json::from_slice(&buffer).context("Failed to parse a json file")?;
-
-			for markup in markup_content.markups {
+			for markup in markup_content?.markups {
 				let coords = markup.coordinate_system;
 				if coords.len() != 3 {
 					return Err(anyhow!("Invalid coordinate system. Should be 3 characters"));

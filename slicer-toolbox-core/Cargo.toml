@@ -1,10 +1,11 @@
 [package]
 name = "slicer-toolbox-core"
 version = "1.0.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-serde = { version = "1.0.217", features = ["default", "derive"] }
-serde_json = "1.0.138"
+serde = { version = "1.0.218", features = ["default", "derive"] }
+serde_json = "1.0.139"
 walkdir = "2.5.0"
 anyhow = "1.0.95"
+compress-tools = "0.15.1"

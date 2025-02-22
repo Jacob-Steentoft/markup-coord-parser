@@ -1,6 +1,10 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Context, Result, anyhow};
+use compress_tools::{ArchiveContents, ArchiveIterator};
 use serde::Deserialize;
+use serde::de::DeserializeOwned;
 use std::fs::File;
+use std::io::{Read, Seek};
+use std::marker::PhantomData;
 use std::path::Path;
 use walkdir::WalkDir;
 
@@ -61,7 +65,9 @@ pub fn parse_slicer_markups(dir: impl AsRef<Path>) -> Result<Coordinates> {
 			if coordinate_system.is_none() {
 				coordinate_system = Some(coords)
 			} else if coordinate_system != Some(coords) {
-				return Err(anyhow!("Multiple different coordinate systems found. Please make sure to only export using one type"));
+				return Err(anyhow!(
+					"Multiple different coordinate systems found. Please make sure to only export using one type"
+				));
 			}
 
 			for control_point in markup.control_points {
@@ -85,4 +91,68 @@ pub fn parse_slicer_markups(dir: impl AsRef<Path>) -> Result<Coordinates> {
 	} else {
 		Err(anyhow!("No coordinate system found"))
 	}
+}
+
+pub struct ArchiveFileIterator<R: Read + Seek, T: DeserializeOwned> {
+	buffer: Vec<u8>,
+	archive_iter: ArchiveIterator<R>,
+	phantom_data: PhantomData<T>,
+}
+
+impl<R: Read + Seek, T: DeserializeOwned> ArchiveFileIterator<R, T> {
+	fn new(iter: ArchiveIterator<R>) -> Self {
+		Self {
+			archive_iter: iter,
+			buffer: Vec::new(),
+			phantom_data: PhantomData::default(),
+		}
+	}
+}
+
+impl<R: Read + Seek, T: DeserializeOwned> Iterator for ArchiveFileIterator<R, T> {
+	type Item = Result<T>;
+	fn next(&mut self) -> Option<Self::Item> {
+		loop {
+			let Some(context) = self.archive_iter.next() else {
+				return None;
+			};
+
+			match context {
+				ArchiveContents::StartOfEntry(_, _) => {
+					self.buffer.clear();
+					continue;
+				}
+				ArchiveContents::DataChunk(buf) => {
+					self.buffer.extend(&buf);
+					continue;
+				}
+				ArchiveContents::EndOfEntry => {
+					return Some(
+						serde_json::from_slice::<T>(&self.buffer)
+							.context("Failed to parse a json file"),
+					);
+				}
+				ArchiveContents::Err(err) => {
+					return Some(Err(anyhow!(
+						"Failed to parse archive data with err: {0}",
+						err
+					)));
+				}
+			}
+		}
+	}
+}
+
+impl<R: Read + Seek> ArchiveCollector for ArchiveIterator<R> {
+	fn into_de_iter<T: for<'de> Deserialize<'de>>(
+		self,
+	) -> ArchiveFileIterator<impl Read + Seek, T> {
+		ArchiveFileIterator::new(self)
+	}
+}
+
+pub trait ArchiveCollector {
+	fn into_de_iter<T: for<'de> Deserialize<'de>>(
+		self,
+	) -> ArchiveFileIterator<impl Read + Seek, T>;
 }
